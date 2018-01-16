@@ -18,11 +18,12 @@
   "license": "MIT",
   "dependencies": {
     "prop-types": "^15.5.10",
+    "react-native-recyclerview-list": "^0.2.3",
     "xdate": "^0.8.0"
   },
   "devDependencies": {
-    "eslint": "^3.19.0",
     "babel-eslint": "^7.2.3",
+    "eslint": "^3.19.0",
     "eslint-plugin-react": "^7.0.0",
     "jasmine": "^2.5.2",
     "react": "16.0.0-alpha.12",
