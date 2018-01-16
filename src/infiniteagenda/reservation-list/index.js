@@ -3,9 +3,7 @@
  */
 import React, {Component} from 'react';
 import {
-  FlatList,
   ActivityIndicator,
-  Text,
   View
 } from 'react-native';
 import Reservation from './reservation';
@@ -17,7 +15,6 @@ import styleConstructor from './style';
 
 import RecyclerViewList from 'react-native-recyclerview-list';
 import DataSource from 'react-native-recyclerview-list/lib/DataSource';
-import reservation from './reservation';
 
 
 class ReactComp extends Component {
@@ -90,15 +87,14 @@ class ReactComp extends Component {
     super(props);
     this.styles = styleConstructor(props.theme);
     this.heights=[];
-    //TODO today as a default
-    this.selectedDay = this.props.selectedDay || new XDate('2018-01-15');
+    this.selectedDay = this.props.selectedDay || new XDate();
     
     this.pastLimit = this.selectedDay.clone();
     this.pastLimit.addDays(-15);
     this.futureLimit = this.selectedDay.clone();
     this.futureLimit.addDays(15);
     this.state = {
-      datasource: new DataSource([], (item, index) => item.id),
+      datasource: new DataSource([], item => item.id),
       data: {},
       dataInitialized: false,    
       loadingDataTop: false,
@@ -111,11 +107,9 @@ class ReactComp extends Component {
   componentWillMount() {
 
     if (!this.props.onReadDayReservations) {
-      console.error('onReadDayReservations property is not assigned. Component will not reseive any data.') 
+      console.error('onReadDayReservations property is not assigned. Component will not reseive any data.'); // eslint-disable-line
       return;
     }
-
-    const date = this.selectedDay.clone();
     this._loadData('FUTURE');
   }
 
@@ -202,7 +196,6 @@ class ReactComp extends Component {
     else {
       scroll && this._scrollToIndex(index);
     }
-    console.log(`selectedDay: ${this.selectedDay.toString('yyyy-MM-dd')} index: ${index}`);
 
     /**
      * Start preloading if the selected days index is over the safe zone in the top or bottom of the area.
@@ -212,12 +205,15 @@ class ReactComp extends Component {
         this._loadData(index < this.props.dataLoadThreshold ? 'PAST' : 'FUTURE');
       }
     }
-    console.log(index);
   }
 
   _scrollToIndex = index => {
     this._lastAnimationStartTick = new Date().getTime();
-    this.list.scrollToIndex( { animated: true, index, viewOffset: -10 });
+    this.list.scrollToIndex({ 
+      animated: true, 
+      index, 
+      viewOffset: -10 
+    });
   }
 
   _scrollToEnd = () => {
@@ -279,7 +275,6 @@ class ReactComp extends Component {
     }
 
     this.props.onReadDayReservations(currentDay.toString('yyyy-MM-dd'), bufferSize, direction, newData => {
-      console.log(newData);
 
       let { datasource, data } = this.state;
       const keys = Object.getOwnPropertyNames(newData);
@@ -303,7 +298,7 @@ class ReactComp extends Component {
       let currentDataLength = datasource._data.length;
 
       if (direction === 'PAST')  {
-        datasource.splice(0, 0, ...items)
+        datasource.splice(0, 0, ...items);
 
         if (currentDataLength !== 0) {
           currentDay.addDays(this.props.bufferSize * 2);
@@ -330,7 +325,7 @@ class ReactComp extends Component {
       };
 
       if (!this.state.dataInitialized) {
-        state.dataInitialized = true
+        state.dataInitialized = true;
       }
       this.setState(state);
 
@@ -340,10 +335,10 @@ class ReactComp extends Component {
     });
   }
 
-  _onVisibleItemsChange = ({firstIndex, lastIndex}) => {
+  _onVisibleItemsChange = ({ firstIndex }) => {
 
     if (this.state.datasource) {
-      let item = this.state.datasource._data[firstIndex]
+      let item = this.state.datasource._data[firstIndex];
       if (item) {
         let day = item.day;
         const sameDate = dateutils.sameDate(day, this.selectedDay);
@@ -359,17 +354,9 @@ class ReactComp extends Component {
     }
   }
   
-
-  // onRowLayoutChange(ind, event) {
-  //   this.heights[ind] = event.nativeEvent.layout.height;
-  // }
-
-  keyIterator = 1;
-
-  // onLayout={this.onRowLayoutChange.bind(this, index)}>
-  _renderRow = ({item, index}) => {
+  _renderRow = ({ item }) => {
     return (
-      <View key={this.keyIterator++}>
+      <View>
         <Reservation
           item={item}
           renderItem={this.props.renderItem}
@@ -435,8 +422,6 @@ class ReactComp extends Component {
       }
       return (<ActivityIndicator style={{marginTop: 80}}/>);
     }
-
-    console.log(this.state);
 
     return (
       <RecyclerViewList
