@@ -13,6 +13,14 @@ function sameDate(a, b) {
     a.getDate() === b.getDate();
 }
 
+function isDateBefore(a, b) {
+  return a instanceof XDate && b instanceof XDate && a.getTime() < b.getTime();
+}
+
+function isDateAfter(a, b) {
+  return a instanceof XDate && b instanceof XDate && a.getTime() > b.getTime();
+}
+
 function isGTE(a, b) {
   return b.diffDays(a) > -1;
 }
@@ -88,5 +96,7 @@ module.exports = {
   page,
   fromTo,
   isLTE,
-  isGTE
+  isGTE,
+  isDateBefore,
+  isDateAfter
 };
